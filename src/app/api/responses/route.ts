@@ -52,6 +52,13 @@ export async function POST(request: Request) {
       member = newMember;
     }
 
+    if (!member) {
+      return NextResponse.json(
+        { error: 'Failed to create member' },
+        { status: 500 }
+      );
+    }
+
     // 오늘 응답이 있는지 확인
     const { data: existingResponse } = await supabase
       .from('responses')

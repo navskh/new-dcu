@@ -1,6 +1,38 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+interface FormField {
+  id: string;
+  label: string;
+  type: string;
+  field_order: number;
+  options: string[] | null;
+}
+
+interface FormWithFields {
+  id: string;
+  name: string;
+  fields: FormField[];
+}
+
+interface ResponseValue {
+  field_id: string;
+  value: string;
+}
+
+interface Member {
+  id: string;
+  name: string;
+}
+
+interface ResponseData {
+  id: string;
+  date: string;
+  created_at: string;
+  member: Member;
+  values: ResponseValue[];
+}
+
 // GET /api/forms/[id]/responses - 폼 응답 조회
 export async function GET(
   request: Request,
@@ -21,6 +53,8 @@ export async function GET(
     if (formError || !form) {
       return NextResponse.json({ error: 'Form not found' }, { status: 404 });
     }
+
+    const typedForm = form as unknown as FormWithFields;
 
     // 응답 조회 쿼리 빌드
     let query = supabase
@@ -45,14 +79,15 @@ export async function GET(
 
     if (responsesError) throw responsesError;
 
+    const typedResponses = (responses || []) as unknown as ResponseData[];
+
     // 필드 정보를 순서대로 정렬
-    const sortedFields = (form.fields as Array<{ id: string; label: string; type: string; field_order: number; options: string[] | null }>)
-      .sort((a, b) => a.field_order - b.field_order);
+    const sortedFields = typedForm.fields.sort((a, b) => a.field_order - b.field_order);
 
     // 응답 데이터 정리
-    const formattedResponses = responses?.map((response) => {
+    const formattedResponses = typedResponses.map((response) => {
       const valuesMap: Record<string, string> = {};
-      (response.values as Array<{ field_id: string; value: string }>)?.forEach((v) => {
+      response.values?.forEach((v) => {
         valuesMap[v.field_id] = v.value;
       });
 
@@ -60,10 +95,10 @@ export async function GET(
         id: response.id,
         date: response.date,
         createdAt: response.created_at,
-        memberName: (response.member as { id: string; name: string })?.name || '알 수 없음',
+        memberName: response.member?.name || '알 수 없음',
         values: valuesMap,
       };
-    }) || [];
+    });
 
     // 날짜별로 그룹화
     const groupedByDate: Record<string, typeof formattedResponses> = {};
@@ -76,8 +111,8 @@ export async function GET(
 
     return NextResponse.json({
       form: {
-        id: form.id,
-        name: form.name,
+        id: typedForm.id,
+        name: typedForm.name,
       },
       fields: sortedFields.map((f) => ({
         id: f.id,

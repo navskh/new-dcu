@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase';
 
 // UUID 형식 체크
