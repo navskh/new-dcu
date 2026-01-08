@@ -6,12 +6,6 @@ export async function POST(request: Request) {
     const { password } = await request.json();
     const adminPassword = process.env.ADMIN_PASSWORD;
 
-    console.log('Login attempt:', {
-      inputPassword: password,
-      envPassword: adminPassword,
-      match: password === adminPassword,
-    });
-
     if (!adminPassword) {
       return NextResponse.json(
         { error: 'Admin password not configured' },

@@ -241,8 +241,25 @@ export default function FormPage({ params }: { params: Promise<{ id: string }> }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-200/70">
-        <p className="text-gray-500">로딩 중...</p>
+      <div className="min-h-screen bg-gray-200/70">
+        {/* 헤더 스켈레톤 */}
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm shadow-sm">
+          <div className="max-w-lg mx-auto px-4 py-4">
+            <div className="h-7 bg-gray-200 rounded-lg w-1/3 animate-pulse"></div>
+          </div>
+          <div className="h-1 bg-gray-100"></div>
+        </div>
+        {/* 컨텐츠 스켈레톤 */}
+        <div className="max-w-lg mx-auto px-4 py-6">
+          <div className="space-y-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-2xl p-5 shadow-sm animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/4 mb-3"></div>
+                <div className="h-12 bg-gray-100 rounded-xl"></div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
