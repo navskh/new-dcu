@@ -342,6 +342,7 @@ export default function FormPage({ params }: { params: Promise<{ id: string }> }
             </div>
             <input
               type="text"
+              enterKeyHint="next"
               value={memberName}
               onChange={(e) => handleNameChange(e.target.value)}
               onFocus={() => setFocusedFieldId('name')}
@@ -404,9 +405,13 @@ export default function FormPage({ params }: { params: Promise<{ id: string }> }
                   ref={(el) => { inputRefs.current[field.id] = el; }}
                   type="number"
                   inputMode="numeric"
+                  enterKeyHint="next"
                   value={values[field.id] || ''}
                   onChange={(e) => handleNumberChange(field.id, e.target.value)}
-                  onFocus={() => setFocusedFieldId(field.id)}
+                  onFocus={(e) => {
+                    setFocusedFieldId(field.id);
+                    e.target.select();
+                  }}
                   onBlur={() => setFocusedFieldId(null)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -424,6 +429,7 @@ export default function FormPage({ params }: { params: Promise<{ id: string }> }
                 <input
                   ref={(el) => { inputRefs.current[field.id] = el; }}
                   type="text"
+                  enterKeyHint="next"
                   value={values[field.id] || ''}
                   onChange={(e) => handleValueChange(field.id, e.target.value)}
                   onFocus={() => setFocusedFieldId(field.id)}
@@ -491,12 +497,16 @@ export default function FormPage({ params }: { params: Promise<{ id: string }> }
                           ref={(el) => { stepRefs.current[`${field.id}_${step}`] = el; }}
                           type="number"
                           inputMode="numeric"
+                          enterKeyHint="next"
                           value={stepValues[step] ?? 0}
                           onChange={(e) => {
                             const newStepValues = { ...stepValues, [step]: parseInt(e.target.value) || 0 };
                             setValues((prev) => ({ ...prev, [field.id]: JSON.stringify(newStepValues) }));
                           }}
-                          onFocus={() => setFocusedFieldId(field.id)}
+                          onFocus={(e) => {
+                            setFocusedFieldId(field.id);
+                            e.target.select();
+                          }}
                           onBlur={() => setFocusedFieldId(null)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
